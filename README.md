@@ -406,7 +406,11 @@ To help you get going with your learning, please follow the following steps:
         fabrics/
            ...
            tiny/
+             ....
+             README.md
     ```
+
+    Please refer to the `README.md` for instruction on how to attach and detach chaincodes for debugging.
 
 1. Download an example chaincode by running this chaincode `go get github.com/hlf-go/example-chaincodes`.
 
