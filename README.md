@@ -493,22 +493,23 @@ Once you have mastered basic concepts, you are encourage to:
 * Apply it to complex fabric network configurations, please refer to this [repo](https://github.com/hlf-go/fabrics) for scripts to help you setup locally or use pre-configured cloud based (to be announced);
 * Organise all your Go and non-Go (Java, Javascripts, etc) projects based on Go-style workspace as this will help you reference projects easily via the variable `$GOPATH`. Here is an example:
 
-```
-$GOPATH/
-    bin/
-        someuseful-tools
-    pkg/
-      config-files/
-      <other go/c libraries>/
-    src/
-      github.com/user/
-          javascript-ui/
-          fabric-node-sdk-middleware/
-          fabric-go-sdk-middleware/
-          chaincodes/
-      github.com/thirdparty/
-         some-project/
-```
+    ```
+    $GOPATH/
+        bin/
+            someuseful-tools
+        pkg/
+        config-files/
+        <other go/c libraries>/
+        src/
+        github.com/user/
+            javascript-ui/
+            fabric-node-sdk-middleware/
+            fabric-go-sdk-middleware/
+            chaincodes/
+        github.com/thirdparty/
+            some-project/
+    ```
+* Consider the use of more sophisticated testing framework to verify your chaincode. Use Unit Testing Framework and Hyperledger Fabric's mocking framework.
 
 # Disclaimer
 
