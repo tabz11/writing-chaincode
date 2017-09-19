@@ -366,21 +366,21 @@ For detailed descriptions of the roles of hyperledger fabric components, please 
 
 ### <a name="setupMinimalFabric">Setup a minimal hyperledger fabric</a>
 
-You will find a set of scripts located [here](./fabric) to help you:
+You can get a minimal fabric from [https://github.com/hlf-go/fabrics/tiny](https://github.com/hlf-go/fabrics/tiny). Just run the command `go get github.com/hlf-go/fabrics/tiny` from anywhere within `$GOPATH`. If successful you will find the project here `$GOPATH/src/github.com/hlf-go/fabrics/tiny` with the following scripts:
 
-* [configure docker containers](./fabric/docker-compose.yml);
+* to configure docker containers (docker-compose.yml);
 
-* membership polcy assets (i.e. [configtx.yml](./fabric/configtx.yml) and [crypto config](./fabric/crypto-config.yaml));
+* membership polcy assets configuration file (configtx.yml) and crypto config (crypto-config.yaml) file;
 
-* [install, instantiate and invoke chaincode](./fabric/scripts);
+* a collection of scripts to install, instantiate and invoke chaincode (see folder `./scripts`);
 
-* [manage fabric operations](./fabric/fabricOps.sh).
+* a script to help you generate your tiny fabric network (`fabricOps.sh`).
 
 In the case of [fabricOps.sh](.fabric/fabricOps.sh), you use it to:
 
 | Command | Action | Comments |
 |---|---|---|
-| `fabricOps.sh start` | Start a running fabric infrastructure | In order for `peer0.org1.example.com` to work with `orderer.example.com` they must be managed within the context the same membership policy. The policy assets are generated based on [configtx.yml](./fabric/configtx.yml) and [crypto config](./fabric/crypto-config.yaml).<br><br>When you execute this fabric operation, a share member policy is generated and followed by docker contanters. |
+| `fabricOps.sh start` | Start a running fabric infrastructure | In order for `peer0.org1.example.com` to work with `orderer.example.com` they must be managed within the context the same membership policy. The policy assets are generated based on `configtx.yml` and `crypto config` files. |
 | `fabricOps.sh status` | Check status of docker containers | This operation is used to check the status of your docker containers.<br><br>This example shows all the relevant containers are running properly: <code><b><br>dev-peer0.org1.example.com-mycc-1.0: Up 24 seconds<br>peer0.org1.example.com: Up 26 minutes<br>cli: Up 26 minutes<br>orderer.example.com: Up 26 minutes</code></b> |
 | `fabricOps.sh clean` | Reset the fabric infrastructure | This operation removes membership and docker artefacts.<br><br> **NOTES:**<br> This will only remove docker containers and images that are responsible for running chaincodes (typically with a name containing `dev-` prefix). It should not impact any docker containers that you may already have in operation but I can't be guaranteed. If you have concerned please modify `fabricOps.sh` accordingly. |
 | `fabricOps.sh cli` | This operation gives you access to fabric `cli` | You will be given access to `cli`'s own terminal. From there you can then execute chaincode related operations which we'll discussion on the next sections |
@@ -399,30 +399,31 @@ In this section, you will learn to execute a simple chaincode and debug your cha
 
 To help you get going with your learning, please follow the following steps:
 
-1. Executing this command `go get github.com/hlf-go/writing-chaincode` (assuming you have already completed [this setup](setupDevEnv)).
+1. Assume you have gone through the [setup minimal fabric step](#setupMinimalFabric), you should find the following in your Go workspace:
+
+    ```
+    $GOPATH/src/github.com/hlf-go/
+        fabrics/
+           ...
+           tiny/
+    ```
+
+1. Download an example chaincode by running this chaincode `go get github.com/hlf-go/example-chaincodes`.
 
     You will find this in your Go workspace:
 
     ```
     $GOPATH/src/github.com/hlf-go/
-        writing-chaincode/
-            chaincodes/
-                myfirstchaincode
-                    chaincode.go
-            fabric/
-                scripts/
-                    myfirstchaincode.sh
-                configtx.yml
-                crypto-config.yaml
-                docker-compose.yml
-                fabricOps.sh
-            .gitignore
-            README.md
+        fabrics/
+           ...
+           tiny/
+        example-chaincodes/
+            minimalcc/
+              chaincode.go
+        
     ```
 
-    This is a pre-configured chaincode development framework.
-
-1. Navigate to `$GOPATH/src/github.com/hlf-go/fabric/` and execute this command (on macOS and Linux only):
+1. Navigate to `$GOPATH/src/github.com/hlf-go/fabrics/tiny` and execute this command (on macOS and Linux only):
 
     ```
     ./fabricOps.sh start
@@ -441,17 +442,19 @@ To help you get going with your learning, please follow the following steps:
     ```
     root@<your-container-id>:/opt/gopath/src/github.com/hyperledger/fabric/peer#
     ```
-1. In the `cli` execute this command:
+1. In the `cli` execute the following commands in the following order:
 
     ```
-    root@<your-container-id>:/opt/gopath/src/github.com/hyperledger/fabric/peer# ./scripts/myfirstchaincode.sh
+    root@<your-container-id>:/opt/gopath/src/github.com/hyperledger/fabric/peer# ./scripts/create-channel.sh
+    root@<your-container-id>:/opt/gopath/src/github.com/hyperledger/fabric/peer# ./scripts/join-channel.sh
+    root@<your-container-id>:/opt/gopath/src/github.com/hyperledger/fabric/peer# ./scripts/install-chaincode.sh
+    root@<your-container-id>:/opt/gopath/src/github.com/hyperledger/fabric/peer# ./scripts/instantiate-chaincode.sh
+    root@<your-container-id>:/opt/gopath/src/github.com/hyperledger/fabric/peer# ./scripts/invoke-chaincode.sh
     ```
 
-    This will execute a chaincode found in [`$GOPATH/src/github.com/hlf-go/writing-chaincodes/chaincodes/myfirstchaincode/chaincode.go`](../chaincodes/myfirstchaincode/chaincode.go). The chaincode is very simple. It will produce the following console output `Hello Init` when the chaincode method `Init` is called. `Hello Invoke` when the chaincode method `Invoke` is called.
+    This will enable you to interact with the chaincode found in [`$GOPATH/src/github.com/hlf-go/example-chaincodes/minimalcc/chaincode.go`](https://github.com/hlf-go/example-chaincodes/blob/master/minimalcc/chaincode.go). The chaincode is very simple. It will produce the following console output `Hello Init` when the chaincode method `Init` is called. `Hello Invoke` when the chaincode method `Invoke` is called.
 
-    The script reponsible for executing the chaincode is found in [`$GOPATH/src/github.com/hlf-go/writing-chaincodes/fabric/scripts/myfirstchaincode.sh`](./scripts/myfirstchaincode.sh).Please study it.
-
-1. Open another terminal, navigate to `$GOPATH/src/github.com/hlf-go/fabric` and execute this command:
+1. Open another terminal, navigate to `$GOPATH/src/github.com/hlf-go/fabrics` and execute this command:
 
     ```
     ./fabricOps.sh status
@@ -484,12 +487,28 @@ To help you get going with your learning, please follow the following steps:
 
 The training materials presented here are extremely stunted to help you understand basic concepts. It does not necessarily represent the only way of working. There are other ways of approaching your chaincode development.
 
-Once you have mastered basic concepts, you are encourage to fork this repository, modify it and experiment with other ways of working. The areas that will give clues to modifying this repo to suit your needs are:
+Once you have mastered basic concepts, you are encourage to:
 
-* `$GOPATH/src` - as long as your chaincode project is organised around this directory, you will be able to take advantage of Go tooling.
-* `fabricOp.sh` - focus your attention on section related fabric network artifact and this will give you clues to how membership policies are generated and try to relate it to the description in the [official documentation](https://hyperledger-fabric.readthedocs.io/en/latest/build_network.html#crypto-generator)
-* `docker-compose.yml` - the mapping between `cli` component is specified in `volume` section, modify it to suit your own configuration.
-* [`myfirstchaincode.sh`](./fabric/scripts/myfirstchaincode.sh) - modify these accordingly (i.e. see [official documentation](https://hyperledger-fabric.readthedocs.io/en/latest/chaincode4ade.html))
+* Try developing more complex chaincode, you can reference the [hyperledger fabric samples](https://github.com/hyperledger/fabric-samples) or others (to be announced);
+* Apply it to complex fabric network configurations, please refer to this [repo](https://github.com/hlf-go/fabrics) for scripts to help you setup locally or use pre-configured cloud based (to be announced);
+* Organise all your Go and non-Go (Java, Javascripts, etc) projects based on Go-style workspace as this will help you reference projects easily via the variable `$GOPATH`. Here is an example:
+
+```
+$GOPATH/
+    bin/
+        someuseful-tools
+    pkg/
+      config-files/
+      <other go/c libraries>/
+    src/
+      github.com/user/
+          javascript-ui/
+          fabric-node-sdk-middleware/
+          fabric-go-sdk-middleware/
+          chaincodes/
+      github.com/thirdparty/
+         some-project/
+```
 
 # Disclaimer
 
