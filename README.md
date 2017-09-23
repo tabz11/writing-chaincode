@@ -298,7 +298,7 @@ You can manually create and provision the `vendor` directory but using tools mak
 
 **Note:**
 
-* What if I wish to re-use another project that is outside the chaincode root directory but in the Go workspace?
+* What if I wish to re-use another project that is outside the chaincode root directory in the Go workspace but not yet in say github.com repo?
 
 * For example, this is my code structure:
 
@@ -322,9 +322,11 @@ You can manually create and provision the `vendor` directory but using tools mak
                         vendor.json
     ```
 
-    I wish to vendor `github.com/user/another-repo/` in `mychaincode` directory.
+    I wish to vendor `github.com/user/another-repo/`, but it does not yet exists in my `github.com` repo, into `mychaincode` directory.
+
+    In this case run the command `govendor add github.com/user/another-repo`. You could also use this command `govendor add +external`. This will pull **ALL** the artefacts in `$GOPATH` into `vendor` folder. 
     
-    It is beyond the scope of this document but you could consider using the command `govendor add +external`. This will pull all the artefacts in `$GOPATH` into `vendor`. Please refer to [Govendor documentation](github.com/user/another-repo/) for details.
+    It is beyond the scope of this document to discuss all use cases pertaining to `govendor`. Please refer to [Govendor documentation](https://github.com/kardianos/govendor) for details.
 
 <hr>
 
@@ -502,16 +504,26 @@ Once you have mastered basic concepts, you are encourage to:
         bin/
             someuseful-tools
         pkg/
-        config-files/
-        <other go/c libraries>/
+            config-files/
+               .....
+            <other go/c libraries>/
+               .....
         src/
-        github.com/user/
-            javascript-ui/
-            fabric-node-sdk-middleware/
-            fabric-go-sdk-middleware/
-            chaincodes/
-        github.com/thirdparty/
-            some-project/
+            github.com/user/
+                javascript-ui/
+                    .....
+                    package.json
+                fabric-node-sdk-middleware/
+                    .....
+                    package.json
+                fabric-go-sdk-middleware/
+                    ......
+                    main.go
+                chaincodes/
+                    chaincode.go
+            github.com/thirdparty/
+                some-project/
+                    ......
     ```
 * Consider the use of more sophisticated testing framework to verify your chaincode. Use Unit Testing Framework and Hyperledger Fabric's mocking framework.
 
