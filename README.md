@@ -225,7 +225,7 @@ It is extremely unusual to create a chaincode from a single file.
 
 You may want to re-use aspects of a Go code developed by third parties and/or separate out your functional from non-functional (e.g. string formatter) dependencies. Hence, you may want to distribute chaincode in different files and/or directories.
 
-If you were writing Go project you would organise your dependencies this way:
+If you were working on a Go project you would organise your dependencies this way:
 
 ```
 $GOPATH/
@@ -240,11 +240,11 @@ $GOPATH/
                 main.go
 ```
 
-This is a sufficient structure to compile and run code on macOS, Linux, Windows, etc.
+You Go project `github.com/user/repo` is dependent on `github.com/anotheruser/repo` to provide a service. This is a sufficient structure to compile and run code on macOS, Linux, Windows, etc.
 
-In the case of chaincode development, this structure will not work. You will need to organise all your dependencies under one root directory and then deploy the root directory to a fabric peer. 
+In the case of chaincode development, that structure will not work. You will need to organise all your dependencies under one root directory and then deploy the root directory to a fabric peer. 
 
-Here is an example of a hypothetical chaincode project:
+Here is an example of a hypothetical chaincode project with dependencies in a vendor folder:
 
 ```
 $GOPATH/
@@ -266,7 +266,9 @@ In this example:
 
 * `util` is an example custom directory created by you to distribute your chaincode;
 
-* `vendor` is a special directory (with a file `vendor.json`) typically to package dependencies not located at the chaincode root or third parties (see detailed explanations of the use of [vendor folder](https://blog.gopheracademy.com/advent-2015/vendor-folder/)).
+* `vendor` is a special directory (with a file `vendor.json`) typically to package dependencies not located at the chaincode root or third parties (see detailed explanations of the use of [vendor folder](https://blog.gopheracademy.com/advent-2015/vendor-folder/));
+
+* `github.com/anotheruser/repo` is a dependency that is referenced by `chaincode.go`, which would have existed outside you chaincode root folder.
 
 You can manually create and provision the `vendor` directory but using tools makes it easier. As per the [setup step](#setupDevEnv), let's use `Govendor` to `vendor` your dependencies: 
 
@@ -286,7 +288,7 @@ You can manually create and provision the `vendor` directory but using tools mak
 
     This line tells `govendor` not to include `github.com/hyperledger/fabric` and test dependencies. You don't need to include hyperledger fabric dependency because it is part of the fabric peer infrastructure.
 
-1. We are going to `vendor` a third party dependency `github.com/antoheruser/repo` by issuing this command:
+1. We are going to `vendor` a third party dependency `github.com/anotheruser/repo` by issuing this command:
 
     ```
     govendor fetch github.com/anotheruser/repo
