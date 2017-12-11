@@ -17,8 +17,8 @@ services:
     ports:
       - 7050:7050
     volumes:
-        - ./channel-artifacts:/etc/hyperledger/configtx
-        - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/crypto/orderer/msp
+      - ./channel-artifacts:/etc/hyperledger/configtx
+      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/crypto/orderer/msp
 
   couchdb0.org1:
     container_name: couchdb0.org1
