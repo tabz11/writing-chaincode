@@ -2,6 +2,8 @@
 
 set -e
 
+. ./scripts/common.sh
+
 PROJECT_DIR=$PWD
 
 ARGS_NUMBER="$#"
@@ -70,7 +72,7 @@ function generateChannelArtifacts(){
 	echo "#################################################################"
 	echo "#######    Generating anchor peer update for Org1MSP   ##########"
 	echo "#################################################################"
-    $GOPATH/bin/configtxgen -profile MyOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID "mychannel"
+    $GOPATH/bin/configtxgen -profile MyOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNELNAME
 
 }
 

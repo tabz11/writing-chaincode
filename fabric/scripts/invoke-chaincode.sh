@@ -1,7 +1,6 @@
 #!/bin/bash
 
-CHANNELNAME="mychannel"
-CHAINCODEID="mycc"
+. ./scripts/common.sh
 
 echo
 echo "-- Invoking chaincode --"

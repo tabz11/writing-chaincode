@@ -1,11 +1,6 @@
 #!/bin/bash
 
-CHANNELNAME="mychannel"
-CHAINCODEID="mycc"
-
-PATH_TO_CHAINCODE=${1:-'github.com/hyperledger/fabric/examples/chaincode/go/minimalcc'}
-CHAINCODE_VERSION=${2:-'1.0'}
-CHAINCODE_CONSTRUCTOR=${3:-'{"Args":["methodName","a","100","b","200"]}'}
+. ./scripts/common.sh
 
 echo
 echo "-- Installing chaincode --"
@@ -24,11 +19,11 @@ sleep 10
 echo
 echo "-- Instantiating chaincode --"
 echo
-echo $CHAINCODE_ARG
+echo $CHAINCODE_CONSTRUCTOR
 #
 # Once you have successfully install a new chaincode you need to instantiate it. Remember to change the 
 # value of the -v field to match the one shown above.
 # Note: These are arguments currently has no effect until you have implemented something to consume it.
-peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNELNAME -n $CHAINCODEID -v $CHAINCODE_VERSION -c '{"Args":["methodName","a","100","b","200"]}'  -P "OR ('Org1MSP.member')" 
+peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNELNAME -n $CHAINCODEID -v $CHAINCODE_VERSION -c $CHAINCODE_CONSTRUCTOR  -P "OR ('Org1MSP.member')" 
 
 exit 0

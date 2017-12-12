@@ -2,10 +2,11 @@
 
 set -e
 
-CHANNELNAME="mychannel"
+. ./scripts/common.sh
 
 echo
 echo "-- Creating channel --"
+echo 'Named: ' $CHANNELNAME
 echo
 peer channel create -o orderer.example.com:7050 -c $CHANNELNAME -f ./channel-artifacts/channel.tx   
 
