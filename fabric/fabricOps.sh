@@ -8,12 +8,14 @@ PROJECT_DIR=$PWD
 
 ARGS_NUMBER="$#"
 COMMAND="$1"
+ARG_1="$2"
+ARG_2="$3"
 
-usage_message="Useage: $0 start | status | clean | cli | pee"
+usage_message="Useage: $0 start | status | clean | cli | peer | ccview <cc id> <cc version>"
 
 function verifyArg() {
 
-    if [ $ARGS_NUMBER -ne 1 ]; then
+    if [ $ARGS_NUMBER -gt 3 -a $ARGS_NUMBER -lt 1 ]; then
         echo $usage_message
         exit 1;
     fi
@@ -124,6 +126,10 @@ function dockerCli(){
     docker exec -it cli /bin/bash
 }
 
+function ccview(){
+    docker logs dev-peer0.org1.example.com-$1-$2
+}
+
 # Network operations
 verifyArg
 case $COMMAND in
@@ -141,6 +147,13 @@ case $COMMAND in
         ;;
     "cli")
         dockerCli
+        ;;
+    "ccview")
+        if [ $ARGS_NUMBER -ne 3 ]; then
+            echo $ARGS_NUMBER
+            exit 1;
+        fi
+        ccview $ARG_1 $ARG_2
         ;;
     *)
         echo $usage_message
