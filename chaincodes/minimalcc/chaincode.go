@@ -12,7 +12,11 @@ type SimpleChaincode struct{}
 
 // Init to initiate the SimpleChaincode class
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
-	fmt.Println("Hello Init")
+
+	function, args := stub.GetFunctionAndParameters()
+	fmt.Println(function)
+	fmt.Println(args)
+
 	return shim.Success([]byte("Init called"))
 }
 
