@@ -2,14 +2,6 @@
 
 . ./scripts/common.sh
 
-useage="Usage: $0 [-n <channel name>] [-c <chaincode id>] [-v <chaincode version>] [-p <path to chaincode>] "
-
-
-if [ $# -eq 0 ]; then
-  echo $useage
-  exit 1
-fi
-
 while getopts "n:c:v:a:" opt; do
   case $opt in
     n)
