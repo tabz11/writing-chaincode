@@ -15,8 +15,8 @@ func (t *MonetaryValue) StringValue() string {
 }
 
 type LedgerEntry struct {
-	MonetaryValue
-	Beneficiary string `json:"owner"`
+	Amount      MonetaryValue `json:"amount"`
+	Beneficiary string        `json:"beneficiary"`
 }
 
 type Ledger struct {
