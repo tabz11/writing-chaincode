@@ -47,3 +47,34 @@ func TestLedgerEntry(t *testing.T) {
 	}
 
 }
+
+func TestLedger(t *testing.T) {
+
+	money := &MonetaryValue{
+		1234,
+		456,
+		"GBP",
+	}
+
+	ledgerEntry := &LedgerEntry{
+		*money,
+		"Unspent",
+	}
+
+	ledger := &Ledger{
+		[]LedgerEntry{
+			*ledgerEntry,
+		},
+	}
+
+	encoding, err := json.Marshal(ledger)
+	if err != nil {
+		t.Fatalf("Json marshal failed")
+	}
+
+	expectedResult := `{"entries":[{"amount":{"value":1234,"fraction":456,"currency":"GBP"},"beneficiary":"Unspent"}]}`
+	actualResult := string(encoding)
+	if actualResult != expectedResult {
+		t.Fatalf("Expected: %v Got: %v", expectedResult, actualResult)
+	}
+}

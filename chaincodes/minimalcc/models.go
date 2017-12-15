@@ -20,5 +20,5 @@ type LedgerEntry struct {
 }
 
 type Ledger struct {
-	Entries []LedgerEntry
+	Entries []LedgerEntry `json:"entries"`
 }
