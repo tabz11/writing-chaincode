@@ -1,14 +1,22 @@
 package main
 
-type LedgerItem struct {
-	Identifier  string `json:"identifier"`
-	Label       string `json:"label"`
-	Description string `json:"description"`
+import (
+	"fmt"
+)
+
+type MonetaryValue struct {
+	Value           int64  `json:"value"`
+	FractionalValue uint64 `json:"fraction"`
+	Currency        string `json:"currency"`
+}
+
+func (t *MonetaryValue) StringValue() string {
+	return fmt.Sprintf("%v.%v", t.Value, t.FractionalValue)
 }
 
 type LedgerEntry struct {
-	LedgerItem
-	Owner string `json:"owner"`
+	MonetaryValue
+	Beneficiary string `json:"owner"`
 }
 
 type Ledger struct {
