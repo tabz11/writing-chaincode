@@ -26,7 +26,7 @@ FABRIC_ROOT=$GOPATH/src/github.com/hyperledger/fabric
 
 function pullDockerImages(){
   local FABRIC_TAG="x86_64-1.0.0"
-  for IMAGES in peer orderer couchdb ccenv tools; do
+  for IMAGES in peer orderer ccenv tools; do
       echo "==> FABRIC IMAGE: $IMAGES"
       echo
       docker pull hyperledger/fabric-$IMAGES:$FABRIC_TAG
@@ -88,6 +88,10 @@ function startNetwork() {
 
     cd $PROJECT_DIR
     docker-compose up -d
+
+    docker exec peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/channel-artifacts/channel.tx
+    docker exec peer0.org1.example.com peer channel join -b mychannel.block
+
 }
 
 function cleanNetwork() {
