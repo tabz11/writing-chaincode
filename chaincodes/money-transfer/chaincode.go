@@ -13,9 +13,13 @@ type SimpleChaincode struct{}
 // Init to initiate the SimpleChaincode class
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
-	function, args := stub.GetFunctionAndParameters()
-	fmt.Println(function)
-	fmt.Println(args)
+	data, err := stub.GetState("money-transfer")
+	if err != nil {
+		return shim.Error("Unable to interact with state")
+	}
+
+	result := fmt.Sprintf("data %v", data)
+	fmt.Println(result)
 
 	return shim.Success([]byte("Init called"))
 }
