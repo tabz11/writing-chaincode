@@ -2,7 +2,7 @@
 
 set -e
 
-. ./scripts/common.sh
+. ./scripts/channelname.sh
 
 PROJECT_DIR=$PWD
 
@@ -41,9 +41,9 @@ function generateCerts(){
     fi
     
     echo
-	echo "##########################################################"
-	echo "##### Generate certificates using cryptogen tool #########"
-	echo "##########################################################"
+	echo "----------------------------------------------------------"
+	echo "----- Generate certificates using cryptogen tool ---------"
+	echo "----------------------------------------------------------"
 	if [ -d ./crypto-config ]; then
 		rm -rf ./crypto-config
 	fi
@@ -64,16 +64,16 @@ function generateChannelArtifacts(){
     fi
 
     echo
-	echo "#################################################################"
-	echo "### Generating channel configuration transaction 'channel.tx' ###"
-	echo "#################################################################"
+	echo "-----------------------------------------------------------------"
+	echo "--- Generating channel configuration transaction 'channel.tx' ---"
+	echo "-----------------------------------------------------------------"
 
     $GOPATH/bin/configtxgen -profile MyOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
 
     echo
-	echo "#################################################################"
-	echo "#######    Generating anchor peer update for Org1MSP   ##########"
-	echo "#################################################################"
+	echo "-------------------------------------------------"
+	echo "--- Generating anchor peer update for Org1MSP ---"
+	echo "-------------------------------------------------"
     $GOPATH/bin/configtxgen -profile MyOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNELNAME
 
 }
@@ -81,16 +81,18 @@ function generateChannelArtifacts(){
 function startNetwork() {
 
     echo
-    echo "================================================="
-    echo "---------- Starting the network -----------------"
-    echo "================================================="
-    echo
-
+    echo "----------------------------"
+    echo "--- Starting the network ---"
+    echo "----------------------------"
     cd $PROJECT_DIR
     docker-compose up -d
 
-    docker exec peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/channel-artifacts/channel.tx
-    docker exec peer0.org1.example.com peer channel join -b mychannel.block
+    echo
+    echo "----------------------------"
+    echo "--- Initialising network ---"
+    echo "----------------------------"
+    docker exec peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c $CHANNELNAME -f /etc/hyperledger/channel-artifacts/channel.tx
+    docker exec peer0.org1.example.com peer channel join -b $CHANNELNAME.block
 
 }
 
@@ -155,12 +157,12 @@ case $COMMAND in
     "ccview")
         if [ $ARGS_NUMBER -ne 3 ]; then
             echo $ARGS_NUMBER
-            exit 1;
+            exit 1
         fi
         ccview $ARG_1 $ARG_2
         ;;
     *)
         echo $usage_message
-        exit 1;
+        exit 1
 esac
 
