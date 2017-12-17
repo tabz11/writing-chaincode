@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./scripts/transfer-money/chaincodeid.sh
+. ./scripts/channelname.sh
 
 #CHAINCODE_VERSION='2.0'
 #CHAINCODE_CONSTRUCTOR='{"Args":["methodName","a","100","b","200"]}'
@@ -13,6 +13,7 @@ function usage(){
 
 if [ "$#" -eq "0" ]; then  
     usage
+    exit
 fi
 
 while getopts "v:a:" opt; do
@@ -34,12 +35,17 @@ while getopts "v:a:" opt; do
   esac
 done
 
+if [ -z $CHAINCODE_CONSTRUCTOR ]; then
+  CHAINCODE_CONSTRUCTOR="[]"
+fi
 
-if [ ! -z $CHAINCODE_VERSION ] || [ ! -z $CHAINCODE_CONSTRUCTOR ]; then
+if [ ! -z $CHAINCODE_VERSION ]; then
     echo "UPGRADING chaincode $CHAINCODEID to version $CHAINCODE_VERSION"
     echo "in $CHANNELNAME"
     echo "with constructor $CHAINCODE_CONSTRUCTOR"
     constructor="{\"Args\":$CHAINCODE_CONSTRUCTOR}"
     peer chaincode upgrade -n $CHAINCODEID -v $CHAINCODE_VERSION -c $constructor -C $CHANNELNAME
+else
+  usage
 fi
 

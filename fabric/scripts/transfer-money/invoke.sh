@@ -1,20 +1,27 @@
 #!/bin/bash
 
-. ./scripts/transfer-money/chaincodeid.sh
+. ./scripts/channelname.sh
 
 function usage(){ 
-    echo "Usage: $0 <arguments>"
-    echo "   -a <cc argment>   <cc argument> must be in the form [\"method\", \"method-arg-1\", \"method-arg-2\"]"
+    echo "Usage: $0 <flags>"
+    echo "Mandatory:"
+    echo "   -c <cc id> A unique string identifier"
+    echo "Optional:"
+    echo "   -a <cc constructor>   Must be in the form [\"method\", \"method-arg-1\", \"method-arg-2\"]"
 }
 
 if [ "$#" -eq "0" ]; then  
     usage
+    exit 1
 fi
 
-while getopts "v:a:" opt; do
+while getopts "a:c:" opt; do
   case $opt in
     a)
       CHAINCODE_CONSTRUCTOR=$OPTARG
+      ;;
+    c)
+      CHAINCODEID=$OPTARG
       ;;
     \?)
       usage
@@ -27,9 +34,15 @@ while getopts "v:a:" opt; do
   esac
 done
 
-if [ ! -z $CHAINCODE_CONSTRUCTOR ]; then
-    echo "INVOKING chaincode $CHAINCODEID in $CHANNELNAME"
-    constructor="{\"Args\":$CHAINCODE_CONSTRUCTOR}"
-    peer chaincode invoke -o orderer.example.com:7050 -C $CHANNELNAME -n $CHAINCODEID -c $constructor
+if [ -z $CHAINCODE_CONSTRUCTOR ]; then
+  CHAINCODE_CONSTRUCTOR="[]"
 fi
 
+if [ ! -z $CHAINCODEID ]; then
+  echo "INVOKING chaincode $CHAINCODEID in $CHANNELNAME"
+  constructor="{\"Args\":$CHAINCODE_CONSTRUCTOR}"
+  echo "with constructor $constructor"
+  peer chaincode invoke -o orderer.example.com:7050 -C $CHANNELNAME -n $CHAINCODEID -c $constructor
+else
+  usage
+fi 

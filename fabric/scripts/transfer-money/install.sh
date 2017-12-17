@@ -1,17 +1,67 @@
 #!/bin/bash
 
-. ./scripts/transfer-money/chaincodeid.sh
+. ./scripts/channelname.sh
 
-CHAINCODE_VERSION='1.0'
-PATH_TO_CHAINCODE='github.com/hyperledger/fabric/examples/chaincode/go/money-transfer'
-echo "INSTALLING chaincode $CHAINCODEID version $CHAINCODE_VERSION in $PATH_TO_CHAINCODE"
-echo
-peer chaincode install -n $CHAINCODEID -v $CHAINCODE_VERSION -p $PATH_TO_CHAINCODE
+function usage(){ 
+    echo "Usage: $0 <flags>"
+    echo "Mandatory:"
+    echo "   -c <cc id>         A unique string identifier"
+    echo "   -v <cc version>    A numeric number"
+    echo "   -p <cc package>    A name of folder containing chaincodes"
+    echo "Optional:"
+    echo "   -a <cc constructor>   Must be in the form [\"method\", \"method-arg-1\", \"method-arg-2\"]"
+}
 
-CHAINCODE_CONSTRUCTOR='{"Args":["methodName","a","100","b","200"]}'
-echo "INSTANTIATING chaincode $CHAINCODEID version $CHAINCODE_VERSION in $CHANNELNAME"
-echo "with constructor $CHAINCODE_CONSTRUCTOR"
-echo
-peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNELNAME -n $CHAINCODEID -v $CHAINCODE_VERSION -c $CHAINCODE_CONSTRUCTOR  -P "OR ('Org1MSP.member')" 
+if [ "$#" -eq "0" ]; then  
+    usage
+    exit
+fi
+
+while getopts "a:c:p:v:" opt; do
+  case $opt in
+    a)
+      CHAINCODE_CONSTRUCTOR=$OPTARG
+      ;;
+    c)
+      CHAINCODEID=$OPTARG
+      ;;
+    p)
+      CCHAINCODE_PACKAGE=$OPTARG
+      ;;
+    v)
+      CHAINCODE_VERSION=$OPTARG
+      ;;
+    \?)
+      usage
+      exit 1
+      ;;
+    :)
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [ -z $CHAINCODE_CONSTRUCTOR ]; then
+    CHAINCODE_CONSTRUCTOR="[]"
+fi
+
+if [[ ! -z $CHAINCODEID && ! -z $CHAINCODE_VERSION && ! -z $CCHAINCODE_PACKAGE ]]; then
+
+    path_to_chaincode="github.com/hyperledger/fabric/examples/chaincode/go/$CCHAINCODE_PACKAGE"
+    echo "INSTALLING chaincode $CHAINCODEID version $CHAINCODE_VERSION in $path_to_chaincode"
+    echo
+    peer chaincode install -n $CHAINCODEID -v $CHAINCODE_VERSION -p $path_to_chaincode
+
+    constructor="{\"Args\":$CHAINCODE_CONSTRUCTOR}"
+    echo "INSTANTIATING chaincode $CHAINCODEID version $CHAINCODE_VERSION in $CHANNELNAME"
+    echo "with constructor $constructor"
+    echo
+    peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNELNAME -n $CHAINCODEID -v $CHAINCODE_VERSION -c $constructor  -P "OR ('Org1MSP.member')" 
+else
+    usage
+fi
+
+
 
 
